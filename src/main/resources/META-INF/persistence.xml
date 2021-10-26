@@ -6,11 +6,11 @@
     <persistence-unit name="prod" transaction-type="JTA">
         <provider>org.hibernate.ejb.HibernatePersistence</provider>
         <jta-data-source>ds</jta-data-source>
-        <non-jta-data-source>movieDatabaseUnmanaged</non-jta-data-source>
+       
         <properties>
             <!-- 'update' is a nonstandard action, but Hibernate supports it -->
-            <!--   <property name="javax.persistence.schema-generation.database.action" value="update"/>  -->
-            <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+             <property name="javax.persistence.schema-generation.database.action" value="update"/>  
+          <!--    <property name="hibernate.hbm2ddl.auto" value="create-drop"/>  -->
 
         </properties>
     </persistence-unit>

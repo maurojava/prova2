@@ -24,7 +24,7 @@
         <dom4j.version>1.6.1</dom4j.version>
         <!-- versions for HSQLDB setup -->
         <exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
-        <hsqldb.version>2.3.2</hsqldb.version>
+        <hsqldb.version>2.3.4</hsqldb.version>
     </properties>
 
     <dependencies>
