@@ -19,3 +19,10 @@ This template project uses HSQLDB. If you want to use other RDBMS:
 # Shutting down the project
 
 ```mvn tomee:stop```
+
+# Instruction for use the project with the hsqldb and tomee maven plugin
+
+```http://www.antoiovi.com/strumenti-di-sviluppo/maven/configurazione-e-applicazioni/archetypese-tipici-da-maven-repository```
+
+
+
