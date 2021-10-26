@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <Resource id="movieDatabase" type="javax.sql.DataSource">
+        JdbcDriver org.hsqldb.jdbcDriver
+        JdbcUrl jdbc:hsqldb:file:target/db/mydb
+        UserName sa
+        Password
+        JtaManaged true
+    </Resource> 
+</resources>
