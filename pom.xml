@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>mauro.tomee7hibernate</groupId>
     <artifactId>prova2</artifactId>
@@ -24,7 +25,7 @@
         <dom4j.version>1.6.1</dom4j.version>
         <!-- versions for HSQLDB setup -->
         <exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
-        <hsqldb.version>2.3.4</hsqldb.version>
+        <hsqldb.version>2.3.2</hsqldb.version> <!-- 7.0.4 ships with 2.3.2, 2.3.4 requires a newer driver version, so it can't be accessed via the lib version shipped with TomEE-->
     </properties>
 
     <dependencies>
@@ -38,52 +39,88 @@
 
     <build>
         <finalName>${project.artifactId}</finalName>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.tomee.maven</groupId>
-                    <artifactId>tomee-maven-plugin</artifactId>
-                    <version>${tomee-maven-plugin.version}</version>
-                    <configuration>
-                        <tomeeClassifier>plus</tomeeClassifier>
-                        <config>${project.basedir}/src/test/tomee/conf</config>
-                        <libs>
-                            <lib>remove:openjpa-</lib>
-                            <lib>org.hibernate:hibernate-core:${hibernate-core.version}</lib>
-                            <lib>org.hibernate.common:hibernate-commons-annotations:${hibernate-commons-annotations.version}</lib>
-                            <lib>org.jboss:jandex:${jandex.version}</lib>
-                            <lib>org.jboss.logging:jboss-logging:${jboss-logging.version}</lib>
-                            <lib>org.javassist:javassist:${javassist.version}</lib>
-                            <lib>com.fasterxml:classmate:${classmate.version}</lib>
-                            <lib>antlr:antlr:${antlr.version}</lib>
-                            <lib>dom4j:dom4j:${dom4j.version}</lib>
-                            <!-- add JDBC driver for RDBMS you use, driver for HSQLDB is bundled with TomEE -->
-                        </libs>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>exec-maven-plugin</artifactId>
-                    <version>${exec-maven-plugin.version}</version>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.hsqldb</groupId>
-                            <artifactId>hsqldb</artifactId>
-                            <version>${hsqldb.version}</version>
-                        </dependency>
-                    </dependencies>
-                    <configuration>
-                        <includePluginDependencies>true</includePluginDependencies>
-                        <mainClass>org.hsqldb.server.Server</mainClass>
-                        <arguments>
-                            <argument>--database.0</argument>
-                            <argument>file:${project.build.directory}/hsqldb/xdb</argument>
-                            <argument>--dbname.0</argument>
-                            <argument>xdb</argument>
-                        </arguments>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.2.3</version>
+                <configuration>
+                    <webResources>
+                        <resource>
+                            <directory>${basedir}/src/main/webapp/WEB-INF</directory>
+                            <filtering>true</filtering>
+                            <targetPath>WEB-INF</targetPath>
+                        </resource>
+                    </webResources>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.tomee.maven</groupId>
+                <artifactId>tomee-maven-plugin</artifactId>
+                <version>${tomee-maven-plugin.version}</version>
+                <configuration>
+                    <tomeeClassifier>plus</tomeeClassifier>
+                    <config>${project.basedir}/src/test/tomee/conf</config>
+                    <libs>
+                        <lib>remove:openjpa-</lib>
+                        <lib>org.hibernate:hibernate-core:${hibernate-core.version}</lib>
+                        <lib>
+                            org.hibernate.common:hibernate-commons-annotations:${hibernate-commons-annotations.version}
+                        </lib>
+                        <lib>org.jboss:jandex:${jandex.version}</lib>
+                        <lib>org.jboss.logging:jboss-logging:${jboss-logging.version}</lib>
+                        <lib>org.javassist:javassist:${javassist.version}</lib>
+                        <lib>com.fasterxml:classmate:${classmate.version}</lib>
+                        <lib>antlr:antlr:${antlr.version}</lib>
+                        <lib>dom4j:dom4j:${dom4j.version}</lib>
+                        <!-- add JDBC driver for RDBMS you use, driver for HSQLDB is bundled with TomEE -->
+                    </libs>
+                    <systemVariables>
+                        <openejb.system.apps>true</openejb.system.apps>
+                        <tomee.remote.support>true</tomee.remote.support>
+                        <tomee.serialization.class.blacklist>-</tomee.serialization.class.blacklist>
+                        <!--
+                        <log4j.category.OpenEJB>info</log4j.category.OpenEJB>
+						<log4j.category.OpenEJB.options>warn</log4j.category.OpenEJB.options>
+						<log4j.category.OpenEJB.server>info</log4j.category.OpenEJB.server>
+						<log4j.category.OpenEJB.startup>info</log4j.category.OpenEJB.startup>
+						<log4j.category.OpenEJB.startup.service>warn</log4j.category.OpenEJB.startup.service>
+						<log4j.category.OpenEJB.startup.config>warn</log4j.category.OpenEJB.startup.config>
+                        <openejb.logger.external>true</openejb.logger.external>
+                        <openejb.log.factory>log4j</openejb.log.factory>
+                        -->
+                        <openejb.nobanner>false</openejb.nobanner>
+                    </systemVariables>
+                    <webapps>
+                        <webapp>
+                            mauro.tomee7hibernate:prova2:${project.version}?name=ROOT
+                        </webapp>
+                    </webapps>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>${exec-maven-plugin.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.hsqldb</groupId>
+                        <artifactId>hsqldb</artifactId>
+                        <version>${hsqldb.version}</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <includePluginDependencies>true</includePluginDependencies>
+                    <mainClass>org.hsqldb.server.Server</mainClass>
+                    <arguments>
+                        <argument>--database.0</argument>
+                        <argument>file:${project.build.directory}/hsqldb/xdb</argument>
+                        <argument>--dbname.0</argument>
+                        <argument>xdb</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 </project>
